@@ -68,8 +68,26 @@ def player_places_piece!(brd)
 end
 
 def computer_places_piece!(brd)
-  square = empty_squares(brd).sample
-  brd[square] = COMPUTER_MARKER
+  threat = detect_threat(brd)
+  if !!threat
+    brd[threat] = COMPUTER_MARKER
+  else
+    square = empty_squares(brd).sample
+    brd[square] = COMPUTER_MARKER
+  end
+end
+
+# Loop over each section of winning lines
+def detect_threat(brd)
+  WINNING_LINES.each do |line|
+    if brd.values_at(*line).count(PLAYER_MARKER) == 2
+      if brd.values_at(*line).index(INITIAL_MARKER)
+        index = brd.values_at(*line).index(INITIAL_MARKER)
+        return line[index]
+      end
+    end
+  end
+  return false
 end
 
 def board_full?(brd)
@@ -89,10 +107,6 @@ def detect_winner(brd)
     end
   end
   nil
-end
-
-def tally_point(string, player_score)
-  player_score
 end
 
 player_score = 0
