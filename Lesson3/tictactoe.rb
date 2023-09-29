@@ -67,27 +67,75 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
-def computer_places_piece!(brd)
-  threat = detect_threat(brd)
-  if !!threat
-    brd[threat] = COMPUTER_MARKER
+# def computer_places_piece!(brd)
+#   threat = detect_threat(brd)
+#   if !!threat
+#     brd[threat] = COMPUTER_MARKER
+#   else
+#     square = empty_squares(brd).sample
+#     brd[square] = COMPUTER_MARKER
+#   end
+# end
+
+# Loop over each section of winning lines
+# def detect_threat(brd)
+#   WINNING_LINES.each do |line|
+#     if brd.values_at(*line).count(PLAYER_MARKER) == 2
+#       if brd.values_at(*line).index(INITIAL_MARKER)
+#         index = brd.values_at(*line).index(INITIAL_MARKER)
+#         return line[index]
+#       end
+#     end
+#   end
+#   return false
+# end
+
+def find_at_risk_square(line, board, marker)
+  if board.values_at(*line).count(marker) == 2
+    board.select{|k,v| line.include?(k) && v == INITIAL_MARKER}.keys.first
   else
-    square = empty_squares(brd).sample
-    brd[square] = COMPUTER_MARKER
+    nil
   end
 end
 
-# Loop over each section of winning lines
-def detect_threat(brd)
+# def find_winning_move(line, board)
+#   if board.values_at(*line).count(COMPUTER_MARKER) == 2
+#     board.select{|k,v| line.include?(k) && v == INITIAL_MARKER}.keys.first
+#   else
+#     nil
+#   end
+# end
+
+def computer_places_piece!(brd)
+  square = nil
+
+  # offense first 
   WINNING_LINES.each do |line|
-    if brd.values_at(*line).count(PLAYER_MARKER) == 2
-      if brd.values_at(*line).index(INITIAL_MARKER)
-        index = brd.values_at(*line).index(INITIAL_MARKER)
-        return line[index]
-      end
+    square = find_at_risk_square(line, brd, COMPUTER_MARKER)
+    break if square
+  end
+
+  # defense
+  if !square
+    WINNING_LINES.each do |line|
+      square = find_at_risk_square(line, brd, PLAYER_MARKER)
+      break if square
     end
   end
-  return false
+
+  # pick square 5 
+
+  if brd[5] == INITIAL_MARKER
+    square = 5
+    brd[square] = COMPUTER_MARKER
+  end
+
+  # just pick a square
+  if !square
+    square = empty_squares(brd).sample
+  end
+
+  brd[square] = COMPUTER_MARKER
 end
 
 def board_full?(brd)
@@ -113,8 +161,38 @@ player_score = 0
 computer_score = 0
 match_point = 5
 
+
+def determine_player()
+  prompt "Would you or the computer like to go first?"
+  first_player = nil
+  loop do
+    prompt "Enter 1 for you to go first or 2 for computer to go first"
+    first_player = gets.chomp.to_i
+    if first_player == 1 || first_player == 2
+      break
+    else
+      prompt "Invalid input. 1 or 2 are the only valide choices"
+    end
+  end
+  first_player
+end
+
+
+def place_piece!(board, current_player)
+  if current_player == 1
+    player_places_piece!(board)
+  else
+    computer_places_piece!(board)
+  end
+end
+
+
 loop do
   board = initialize_board
+  prompt "Welcome to Tictactoe!"
+  
+  player = determine_player
+
   prompt "Your score is #{player_score}, the Computer's score is #{computer_score}"
 
   loop do
