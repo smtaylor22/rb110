@@ -186,6 +186,10 @@ def place_piece!(board, current_player)
   end
 end
 
+def alternate_player(current_player)
+  current_player == 1 ? 2 : 1 
+end
+
 
 loop do
   board = initialize_board
@@ -197,11 +201,8 @@ loop do
 
   loop do
     display_board(board)
-
-    player_places_piece!(board)
-    break if someone_won?(board) || board_full?(board)
-
-    computer_places_piece!(board)
+    place_piece!(board, player)
+    player = alternate_player(player)
     break if someone_won?(board) || board_full?(board)
   end
 
