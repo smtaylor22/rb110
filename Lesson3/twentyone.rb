@@ -1,10 +1,26 @@
 =begin
-Figure out a data structure to contain the "deck" and the "player's cards" and "dealer's cards". 
-Maybe a hash? An array? A nested array? Your decision will have consequences throughout your code, 
-but don't be afraid of choosing the wrong one. 
-Play around with an idea, and see how far you can push it. If it doesn't work, back out of it.
 
-  
+1. Initialize deck
+2. Deal cards to player and dealer
+3. Player turn: hit or stay
+  - repeat until bust or "stay"
+4. If player bust, dealer wins.
+5. Dealer turn: hit or stay
+  - repeat until total >= 17
+6. If dealer bust, player wins.
+7. Compare cards and declare winner.
+
+
+player turn
+1. ask "hit" or "stay"
+2. if "stay", stop asking
+3. otherwise, go to #1
+
+dealer turn
+1. ask "hit" or "stay"
+2. if "stay", stop asking
+3. otherwise, go to #1
+
 =end
 
 CARD_VALUES = {"2": 2, "3": 3, "4": 4, "5", 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10
@@ -38,3 +54,46 @@ def calc_total(cards)
 
   score
 end
+
+def busted?()
+  true
+end
+
+def player_turn()
+  answer = nil
+  loop do
+    puts "hit or stay?"
+    answer = gets.chomp
+    break if answer == 'stay' || busted?   # the busted? method is not shown
+  end
+
+  if busted?
+    # probably end the game? or ask the user to play again?
+  else
+    puts "You chose to stay!"  # if player didn't bust, must have stayed to get here
+  end
+
+  # ... continue on to Dealer turn
+end
+
+#Dealer turn. The dealer turn will follow a very similar pattern as the 
+# player turn. Except: the dealer's break condition will occur at the 
+# top of the "hit or stay" loop. See if you can figure out why that is.
+def  dealer_turn()
+  answer = nil
+  loop do
+    break if busted?
+    if calc_total(cards) => 17  # If minimum score value reached can decide to hit or stay
+      puts "hit or stay"
+      answer = gets.chomp
+      break if answer == 'stay'
+    puts "You must hit!"
+  end
+  
+  if busted?
+    # probably end the game? or ask the user to play again?
+  else
+    puts "You chose to stay!"  # if dealer didn't bust, he can now stay
+  end
+
+  # ... continue on to Dealer turn
