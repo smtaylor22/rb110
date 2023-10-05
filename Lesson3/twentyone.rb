@@ -55,8 +55,8 @@ def calc_total(cards)
   score
 end
 
-def busted?()
-  true
+def busted?(cards)
+  calc_total(cards) > 21
 end
 
 def player_turn()
@@ -67,8 +67,17 @@ def player_turn()
     break if answer == 'stay' || busted?   # the busted? method is not shown
   end
 
+  # End game and ask if wants to play again
   if busted?
-    # probably end the game? or ask the user to play again?
+    input = ''
+    puts "You Busted! Do you want to play again?"
+    loop do
+      puts "Enter y for yes or n for no"
+      input = gets.chomp
+      break if input.downcase == 'n' || input.downcase == 'y'
+      puts "Invalid input."
+    end
+
   else
     puts "You chose to stay!"  # if player didn't bust, must have stayed to get here
   end
@@ -97,3 +106,6 @@ def  dealer_turn()
   end
 
   # ... continue on to Dealer turn
+
+
+def declare_winner()
