@@ -27,7 +27,7 @@ CARD_VALUES = {"2": 2, "3": 3, "4": 4, "5", 5, "6": 6, "7": 7, "8": 8, "9": 9, "
                 "J": 10, "Q": 10, "K": 10, "A": 11}
 
 deck = [["H", "2"], ["H", "3"], ["H", "4"], ["H", "5"], ["H", "6"], 
-      ["H", "7"], ["H", "8"], ["H", "9"], ["H", "10"], ["H", "J"], ["H", "Q"], 
+        ["H", "7"], ["H", "8"], ["H", "9"], ["H", "10"], ["H", "J"], ["H", "Q"], 
         ["H", "K"], ["H", "A"], ["S", "2"], ["S", "3"], ["S", "4"], ["S", "5"], 
         ["S", "6"], ["S", "7"], ["S", "8"], ["S", "9"], ["S", "10"], ["S", "J"], 
         ["S", "Q"], ["S", "K"], ["S", "A"], ["D", "2"], ["D", "3"], ["D", "4"], 
@@ -39,15 +39,31 @@ deck = [["H", "2"], ["H", "3"], ["H", "4"], ["H", "5"], ["H", "6"],
 
 
 
-def calc_total(cards)
+# Main Game Loop
+loop do
+  deck.shuffle!
 
+  player_hand = []
+  dealer_hand = []
+  
+  2.times do |x| 
+    player_hand << deck.pop
+    dealer_hand << deck.pop
+  end
+
+  puts "Welcome to TwentyOne the game!"
+end
+
+
+
+def calc_total(cards)
   score = 0
   cards.each do |arr|
     score += CARD_VALUES[arr[0]]
   end
 
   aces = hand.select{|arr| arr[1] == 'A'}
-
+  # Adjust for when Aces value can equal 1
   aces.count.times do
     score -= 10 if score > 21
   end
