@@ -1,3 +1,5 @@
+require 'pry-gem'
+require 'pry-byebug'
 =begin
 
 1. Initialize deck
@@ -23,10 +25,11 @@ dealer turn
 
 =end
 
-CARD_VALUES = {"2": 2, "3": 3, "4": 4, "5", 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10
-                "J": 10, "Q": 10, "K": 10, "A": 11}
+CARD_VALUES = {"2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11}
 
-deck = [["H", "2"], ["H", "3"], ["H", "4"], ["H", "5"], ["H", "6"], 
+CARD_NAMES = {"2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "10": "10", "J": "Jack", "Q": "Quenn", "K": "King", "A": "Ace"}
+
+template_deck = [["H", "2"], ["H", "3"], ["H", "4"], ["H", "5"], ["H", "6"], 
         ["H", "7"], ["H", "8"], ["H", "9"], ["H", "10"], ["H", "J"], ["H", "Q"], 
         ["H", "K"], ["H", "A"], ["S", "2"], ["S", "3"], ["S", "4"], ["S", "5"], 
         ["S", "6"], ["S", "7"], ["S", "8"], ["S", "9"], ["S", "10"], ["S", "J"], 
@@ -38,23 +41,24 @@ deck = [["H", "2"], ["H", "3"], ["H", "4"], ["H", "5"], ["H", "6"],
 
 
 
-
-# Main Game Loop
-loop do
-  deck.shuffle!
-
-  player_hand = []
-  dealer_hand = []
-  
-  2.times do |x| 
-    player_hand << deck.pop
-    dealer_hand << deck.pop
+def get_player_card_names(hand)
+  names = hand.map do |card|
+    binding.pry
+    CARD_NAMES[card[1]]
   end
-
-  puts "Welcome to TwentyOne the game!"
+  names.join(" and ")
 end
 
-
+def get_valid_answer()
+  answer = ''
+  loop do
+    puts "Enter y for yes or n for no"
+    answer = gets.chomp
+    break if input.downcase == 'n' || input.downcase == 'y'
+    puts "Invalid input."
+  end
+  answer
+end
 
 def calc_total(cards)
   score = 0
@@ -75,53 +79,142 @@ def busted?(cards)
   calc_total(cards) > 21
 end
 
-def player_turn()
+
+def calc_winner (player_hand, dealer_hand )
+  if calc_total(player_hand) > calc_total(dealer_hand)
+    'player'
+  elsif calc_total(player_hand) < calc_total(dealer_hand)
+    'dealer'
+  else
+    'tie'
+  end
+end
+
+def display_winner(winner)
+  case winner
+  when 'player'
+    puts "You Won!"
+  when 'dealer'
+    puts "The dealer won!"
+  else
+    puts "It's a tie"
+  end
+end
+
+
+# Main Game Loop
+loop do
+  # TO DO method to initialize deck from loop
+
+  deck = template_deck.shuffle
+
+  player_hand = []
+  dealer_hand = []
+  
+  2.times do |x| 
+    player_hand << deck.pop
+    dealer_hand << deck.pop
+  end
+
+  puts "Welcome to TwentyOne the game!"
+  puts "Player's turn"
+  puts "Dealer has: #{CARD_NAMES[dealer_hand[0][1]]} and unknown card"
+  puts "You have: #{get_player_card_names(player_hand)}"
+  
+  # Player turn
   answer = nil
   loop do
     puts "hit or stay?"
     answer = gets.chomp
-    break if answer == 'stay' || busted?   # the busted? method is not shown
+    break if answer == 'stay' || busted?(player_hand)
+    player_hand << deck.pop
+    puts "You have: #{get_player_card_names(player_hand)}"
   end
 
   # End game and ask if wants to play again
-  if busted?
+  if busted?(player_hand)
     input = ''
-    puts "You Busted! Do you want to play again?"
-    loop do
-      puts "Enter y for yes or n for no"
-      input = gets.chomp
-      break if input.downcase == 'n' || input.downcase == 'y'
-      puts "Invalid input."
-    end
+    puts "You Busted!"
+    puts "The dealer wins!"
+    puts "Do you want to play again?"
+    answer = get_valid_answer
+    break if answer == 'y'
+    puts "Thanks for playing!"
 
   else
     puts "You chose to stay!"  # if player didn't bust, must have stayed to get here
   end
 
-  # ... continue on to Dealer turn
+  # Dealer turn
+  loop do
+    break if busted?(dealer_hand) || calc_total(dealer_hand) >= 17
+    puts "Dealer must hit!"
+  end
+  
+  if busted?(dealer_hand)
+    input = ''
+    puts "Dealer Busted!"
+    puts "The player wins!"
+    puts "Do you want to play again?"
+    answer = get_valid_answer
+    break if answer == 'y'
+    puts "Thanks for playing!"
+  else
+    puts "Dealer chose to stay!"  # if dealer didn't bust, he can now stay
+  end
+
+  winner = calc_winner(player_hand, dealer_hand)
+
+  display_winner(winner)
+
+  puts "Do you want to play again?"
+  answer = get_valid_answer
+  break if answer == 'n'
 end
+
+
+# def player_turn()
+#   answer = nil
+#   loop do
+#     puts "hit or stay?"
+#     answer = gets.chomp
+#     break if answer == 'stay' || busted?   # the busted? method is not shown
+#   end
+
+#   # End game and ask if wants to play again
+#   if busted?
+#     input = ''
+#     puts "You Busted!"
+#     puts "The dealer wins!"
+#     puts "Do you want to play again?"
+#     answer = get_valid_answer
+
+#   else
+#     puts "You chose to stay!"  # if player didn't bust, must have stayed to get here
+#   end
+
+#   # ... continue on to Dealer turn
+# end
 
 #Dealer turn. The dealer turn will follow a very similar pattern as the 
 # player turn. Except: the dealer's break condition will occur at the 
 # top of the "hit or stay" loop. See if you can figure out why that is.
-def  dealer_turn()
-  answer = nil
-  loop do
-    break if busted?
-    if calc_total(cards) => 17  # If minimum score value reached can decide to hit or stay
-      puts "hit or stay"
-      answer = gets.chomp
-      break if answer == 'stay'
-    puts "You must hit!"
-  end
+# def  dealer_turn()
+#   answer = nil
+#   loop do
+#     break if busted?
+#     if calc_total(cards) => 17  # If minimum score value reached can decide to hit or stay
+#       puts "hit or stay"
+#       answer = gets.chomp
+#       break if answer == 'stay'
+#     puts "You must hit!"
+#   end
   
-  if busted?
-    # probably end the game? or ask the user to play again?
-  else
-    puts "You chose to stay!"  # if dealer didn't bust, he can now stay
-  end
+#   if busted?
+#     # probably end the game? or ask the user to play again?
+#   else
+#     puts "Dealer chose to stay!"  # if dealer didn't bust, he can now stay
+#   end
 
-  # ... continue on to Dealer turn
+#   # ... continue on to Dealer turn
 
-
-def declare_winner()
