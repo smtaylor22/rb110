@@ -25,9 +25,9 @@ dealer turn
 
 =end
 
-CARD_VALUES = {"2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11}
+CARD_VALUES = {"2"=> 2, "3"=> 3, "4"=> 4, "5"=> 5, "6"=> 6, "7"=> 7, "8"=> 8, "9"=> 9, "10"=> 10, "J"=> 10, "Q"=> 10, "K"=> 10, "A"=> 11}
 
-CARD_NAMES = {"2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "10": "10", "J": "Jack", "Q": "Quenn", "K": "King", "A": "Ace"}
+CARD_NAMES = {"2" => "2", "3"=> "3", "4"=> "4", "5"=> "5", "6"=> "6", "7"=> "7", "8"=> "8", "9"=> "9", "10"=> "10", "J"=> "Jack", "Q"=> "Quenn", "K"=> "King", "A"=> "Ace"}
 
 template_deck = [["H", "2"], ["H", "3"], ["H", "4"], ["H", "5"], ["H", "6"], 
         ["H", "7"], ["H", "8"], ["H", "9"], ["H", "10"], ["H", "J"], ["H", "Q"], 
@@ -43,7 +43,6 @@ template_deck = [["H", "2"], ["H", "3"], ["H", "4"], ["H", "5"], ["H", "6"],
 
 def get_player_card_names(hand)
   names = hand.map do |card|
-    binding.pry
     CARD_NAMES[card[1]]
   end
   names.join(" and ")
@@ -54,16 +53,16 @@ def get_valid_answer()
   loop do
     puts "Enter y for yes or n for no"
     answer = gets.chomp
-    break if input.downcase == 'n' || input.downcase == 'y'
+    break if answer.downcase == 'n' || answer.downcase == 'y'
     puts "Invalid input."
   end
   answer
 end
 
-def calc_total(cards)
+def calc_total(hand)
   score = 0
-  cards.each do |arr|
-    score += CARD_VALUES[arr[0]]
+  hand.each do |card|
+    score += CARD_VALUES[card[1]]
   end
 
   aces = hand.select{|arr| arr[1] == 'A'}
@@ -105,7 +104,7 @@ end
 # Main Game Loop
 loop do
   # TO DO method to initialize deck from loop
-
+  system 'clear'
   deck = template_deck.shuffle
 
   player_hand = []
@@ -149,8 +148,10 @@ loop do
   loop do
     break if busted?(dealer_hand) || calc_total(dealer_hand) >= 17
     puts "Dealer must hit!"
+    dealer_hand << deck.pop
   end
   
+  answer = nil
   if busted?(dealer_hand)
     input = ''
     puts "Dealer Busted!"
@@ -158,14 +159,22 @@ loop do
     puts "Do you want to play again?"
     answer = get_valid_answer
     break if answer == 'y'
+    binding.pry
     puts "Thanks for playing!"
   else
     puts "Dealer chose to stay!"  # if dealer didn't bust, he can now stay
   end
 
+ 
+  break if answer == 'n'
+
   winner = calc_winner(player_hand, dealer_hand)
 
   display_winner(winner)
+
+  puts "Your cards: #{get_player_card_names(player_hand)}"
+  puts "The Dealer cards: #{get_player_card_names(dealer_hand)}"
+
 
   puts "Do you want to play again?"
   answer = get_valid_answer
