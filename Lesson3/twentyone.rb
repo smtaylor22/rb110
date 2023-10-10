@@ -11,8 +11,6 @@ require 'pry-byebug'
   - repeat until total >= 17
 6. If dealer bust, player wins.
 7. Compare cards and declare winner.
-
-
 player turn
 1. ask "hit" or "stay"
 2. if "stay", stop asking
@@ -25,64 +23,59 @@ dealer turn
 
 =end
 
-CARD_VALUES = {"2"=> 2, "3"=> 3, "4"=> 4, "5"=> 5, "6"=> 6, "7"=> 7, "8"=> 8, "9"=> 9, "10"=> 10, "J"=> 10, "Q"=> 10, "K"=> 10, "A"=> 11}
+CARD_VALUES = { "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, "7" => 7,
+                "8" => 8, "9" => 9, "10" => 10, "J" => 10,
+                "Q" => 10, "K" => 10, "A" => 11 }
 
-CARD_NAMES = {"2" => "2", "3"=> "3", "4"=> "4", "5"=> "5", "6"=> "6", "7"=> "7", "8"=> "8", "9"=> "9", "10"=> "10", "J"=> "Jack", "Q"=> "Quenn", "K"=> "King", "A"=> "Ace"}
+SUITS = ['H', 'D', 'S', 'C']
+VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
-template_deck = [["H", "2"], ["H", "3"], ["H", "4"], ["H", "5"], ["H", "6"], 
-        ["H", "7"], ["H", "8"], ["H", "9"], ["H", "10"], ["H", "J"], ["H", "Q"], 
-        ["H", "K"], ["H", "A"], ["S", "2"], ["S", "3"], ["S", "4"], ["S", "5"], 
-        ["S", "6"], ["S", "7"], ["S", "8"], ["S", "9"], ["S", "10"], ["S", "J"], 
-        ["S", "Q"], ["S", "K"], ["S", "A"], ["D", "2"], ["D", "3"], ["D", "4"], 
-        ["D", "5"], ["D", "6"], ["D", "7"], ["D", "8"], ["D", "9"], ["D", "10"], 
-        ["D", "J"], ["D", "Q"], ["D", "K"], ["D", "A"], ["C", "2"], ["C", "3"], 
-        ["C", "4"], ["C", "5"], ["C", "6"], ["C", "7"], ["C", "8"], ["C", "9"], 
-        ["C", "10"], ["C", "J"], ["C", "Q"], ["C", "K"], ["C", "A"]]
+MAX_TOTAL = 21
+MAX_DEALER_TOTAL = 17
 
-
-
-def get_player_card_names(hand)
-  names = hand.map do |card|
-    CARD_NAMES[card[1]]
-  end
-  names.join(" and ")
+def initialize_deck
+  SUITS.product(VALUES).shuffle
 end
 
-def get_valid_answer()
+def prompt(msg)
+  puts "=>#{msg}"
+end
+
+def play_again?
   answer = ''
   loop do
-    puts "Enter y for yes or n for no"
+    prompt "-----------------------"
+    prompt "Do you want to play again? Enter (y)es or (n)o."
     answer = gets.chomp
-    break if answer.downcase == 'n' || answer.downcase == 'y'
-    puts "Invalid input."
+    break if answer.downcase == 'y' || answer.downcase == 'n'
+    prompt "Sorry, Invalid input. Enter 'y' or 'n'"
   end
   answer
 end
 
-def calc_total(hand)
+def calc_total(cards)
   score = 0
-  hand.each do |card|
+  cards.each do |card|
     score += CARD_VALUES[card[1]]
   end
 
-  aces = hand.select{|arr| arr[1] == 'A'}
+  aces = cards.select { |arr| arr[1] == 'A' }
   # Adjust for when Aces value can equal 1
   aces.count.times do
-    score -= 10 if score > 21
+    score -= 10 if score > MAX_TOTAL
   end
 
   score
 end
 
-def busted?(cards)
-  calc_total(cards) > 21
+def busted?(total)
+  total > MAX_TOTAL
 end
 
-
-def calc_winner (player_hand, dealer_hand )
-  if calc_total(player_hand) > calc_total(dealer_hand)
+def calc_winner(player_total, dealer_total)
+  if player_total > dealer_total
     'player'
-  elsif calc_total(player_hand) < calc_total(dealer_hand)
+  elsif player_total < dealer_total
     'dealer'
   else
     'tie'
@@ -92,138 +85,123 @@ end
 def display_winner(winner)
   case winner
   when 'player'
-    puts "You Won!"
+    prompt "You Won!"
   when 'dealer'
-    puts "The dealer won!"
+    prompt "The dealer won!"
   else
-    puts "It's a tie"
+    prompt "It's a tie"
   end
 end
 
+def declare_end_round(player_cards, dealer_cards, player_total, dealer_total)
+  puts "=============="
+  prompt "Player has #{player_cards}, for a total of: #{player_total}"
+  prompt "Dealer has #{dealer_cards}, for a total of: #{dealer_total}"
+  puts "=============="
+end
+
+def find_grand_winner(player_grand_total, dealer_grand_total)
+  if player_grand_total >= 5
+    return 'player'
+  elsif dealer_grand_total >= 5
+    return 'dealer'
+  end
+  nil
+end
+
+player_grand_total = 0
+dealer_grand_total = 0
 
 # Main Game Loop
 loop do
   # TO DO method to initialize deck from loop
   system 'clear'
-  deck = template_deck.shuffle
+  deck = initialize_deck
 
-  player_hand = []
-  dealer_hand = []
-  
-  2.times do |x| 
-    player_hand << deck.pop
-    dealer_hand << deck.pop
+  player_cards = []
+  dealer_cards = []
+
+  2.times do
+    player_cards << deck.pop
+    dealer_cards << deck.pop
   end
 
-  puts "Welcome to TwentyOne the game!"
-  puts "Player's turn"
-  puts "Dealer has: #{CARD_NAMES[dealer_hand[0][1]]} and unknown card"
-  puts "You have: #{get_player_card_names(player_hand)}"
-  
+  player_total = calc_total(player_cards)
+  dealer_total = calc_total(dealer_cards)
+
+  prompt "Welcome to #{MAX_TOTAL} the game!"
+  prompt "Player's Score is #{player_grand_total}."
+  prompt "Dealer's score is #{dealer_grand_total}"
+  prompt "Dealer has: #{dealer_cards[0]} and unknown card"
+  prompt "You have: #{player_cards} for a total of #{player_total}"
+
   # Player turn
   answer = nil
   loop do
-    puts "hit or stay?"
-    answer = gets.chomp
-    break if answer == 'stay' || busted?(player_hand)
-    player_hand << deck.pop
-    puts "You have: #{get_player_card_names(player_hand)}"
+    loop do
+      prompt "Would you like to (h)it or (s)tay?"
+      answer = gets.chomp
+      break if answer.downcase == 'h' || answer.downcase == 's'
+      prompt "Invalid input. Please enter 'h' or 's'."
+    end
+    break if answer.downcase == 's' || busted?(player_total)
+    player_cards << deck.pop
+    player_total = calc_total(player_cards)
+    prompt "You have: #{player_cards}"
+    prompt "Your total is: #{player_total}"
   end
 
   # End game and ask if wants to play again
-  if busted?(player_hand)
-    input = ''
-    puts "You Busted!"
-    puts "The dealer wins!"
-    puts "Do you want to play again?"
-    answer = get_valid_answer
-    break if answer == 'y'
-    puts "Thanks for playing!"
-
+  if busted?(player_total)
+    prompt "You Busted!"
+    declare_end_round(player_cards, dealer_cards, player_total, dealer_total)
+    prompt "The dealer wins!"
+    dealer_grand_total += 1
+    break if find_grand_winner(player_grand_total, dealer_grand_total)
+    answer = play_again?
+    next if answer == 'y'
+    break if answer == 'n'
+  # if player didn't bust, must have stayed to get here
   else
-    puts "You chose to stay!"  # if player didn't bust, must have stayed to get here
+    prompt "You chose to stay!"
   end
 
   # Dealer turn
   loop do
-    break if busted?(dealer_hand) || calc_total(dealer_hand) >= 17
-    puts "Dealer must hit!"
-    dealer_hand << deck.pop
+    break if busted?(dealer_total) ||
+             calc_total(dealer_cards) >= MAX_DEALER_TOTAL
+    prompt "Dealer hits!"
+    dealer_cards << deck.pop
+    dealer_total = calc_total(dealer_cards)
   end
-  
-  answer = nil
-  if busted?(dealer_hand)
-    input = ''
-    puts "Dealer Busted!"
-    puts "The player wins!"
-    puts "Do you want to play again?"
-    answer = get_valid_answer
-    break if answer == 'y'
-    binding.pry
-    puts "Thanks for playing!"
+
+  if busted?(dealer_total)
+    prompt "Dealer Busted!"
+    declare_end_round(player_cards, dealer_cards, player_total, dealer_total)
+    prompt "The player wins!"
+    player_grand_total += 1
+    break if find_grand_winner(player_grand_total, dealer_grand_total)
+    answer = play_again?
+    next if answer == 'y'
+    break if answer == 'n'
+  # if dealer didn't bust, he can now stay
   else
-    puts "Dealer chose to stay!"  # if dealer didn't bust, he can now stay
+    prompt "Dealer chose to stay!"
   end
 
- 
-  break if answer == 'n'
+  winner = calc_winner(player_total, dealer_total)
 
-  winner = calc_winner(player_hand, dealer_hand)
-
+  player_grand_total += 1 if winner == 'player'
+  dealer_grand_total += 1 if winner == 'dealer'
+  declare_end_round(player_cards, dealer_cards, player_total, dealer_total)
   display_winner(winner)
 
-  puts "Your cards: #{get_player_card_names(player_hand)}"
-  puts "The Dealer cards: #{get_player_card_names(dealer_hand)}"
+  break if find_grand_winner(player_grand_total, dealer_grand_total)
 
-
-  puts "Do you want to play again?"
-  answer = get_valid_answer
+  answer = play_again?
   break if answer == 'n'
 end
 
-
-# def player_turn()
-#   answer = nil
-#   loop do
-#     puts "hit or stay?"
-#     answer = gets.chomp
-#     break if answer == 'stay' || busted?   # the busted? method is not shown
-#   end
-
-#   # End game and ask if wants to play again
-#   if busted?
-#     input = ''
-#     puts "You Busted!"
-#     puts "The dealer wins!"
-#     puts "Do you want to play again?"
-#     answer = get_valid_answer
-
-#   else
-#     puts "You chose to stay!"  # if player didn't bust, must have stayed to get here
-#   end
-
-#   # ... continue on to Dealer turn
-# end
-
-#Dealer turn. The dealer turn will follow a very similar pattern as the 
-# player turn. Except: the dealer's break condition will occur at the 
-# top of the "hit or stay" loop. See if you can figure out why that is.
-# def  dealer_turn()
-#   answer = nil
-#   loop do
-#     break if busted?
-#     if calc_total(cards) => 17  # If minimum score value reached can decide to hit or stay
-#       puts "hit or stay"
-#       answer = gets.chomp
-#       break if answer == 'stay'
-#     puts "You must hit!"
-#   end
-  
-#   if busted?
-#     # probably end the game? or ask the user to play again?
-#   else
-#     puts "Dealer chose to stay!"  # if dealer didn't bust, he can now stay
-#   end
-
-#   # ... continue on to Dealer turn
-
+grand_winner = find_grand_winner(player_grand_total, dealer_grand_total)
+prompt "The Grand Winner is: #{grand_winner}!!!!" if grand_winner
+prompt "Thanks for playing!"
