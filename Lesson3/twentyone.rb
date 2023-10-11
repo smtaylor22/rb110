@@ -1,27 +1,39 @@
-require 'pry-gem'
-require 'pry-byebug'
-=begin
+game_rules = <<HEREDOC
+Welcome to Twenty-One!
+Game Rules:
+1. You will be playing with a normal 52-card deck consisting of the 4 suits 
+(hearts, diamonds, clubs, and spades), and 13 values (2, 3, 4, 5, 6, 7, 8, 9, 10,
+jack, queen, king, ace).
 
-1. Initialize deck
-2. Deal cards to player and dealer
-3. Player turn: hit or stay
-  - repeat until bust or "stay"
-4. If player bust, dealer wins.
-5. Dealer turn: hit or stay
-  - repeat until total >= 17
-6. If dealer bust, player wins.
-7. Compare cards and declare winner.
-player turn
-1. ask "hit" or "stay"
-2. if "stay", stop asking
-3. otherwise, go to #1
+2. The goal of Twenty-9One is to try to get as close to 21 as possible,
+without going over. If you go over 21, it's a "bust" and you lose.
 
-dealer turn
-1. ask "hit" or "stay"
-2. if "stay", stop asking
-3. otherwise, go to #1
+3. There are two players. The player(you) and the dealer(computer). You will each
+be dealt 2 cards. You can see both of your cards and 1 of the dealers cards. You
+will go first.
 
-=end
+4. Card Values: all of the card values are pretty straightforward, except for
+the ace. The numbers 2 through 10 are worth their face value. The jack, queen,
+and king are each worth 10, and the ace can be worth 1 or 11. The ace's value
+can be 1 if it will keep your cards total value under 21.
+
+5. Player(you) turn: the player goes first, and can decide to either "hit" or "stay".
+A hit means the player will ask for another card. Remember that if the total exceeds
+21, then the player "busts" and loses.
+
+5. Dealer(computer) turn: when the player stays, it's the dealer's turn. The dealer must
+follow a strict rule for determining whether to hit or stay: hit until the 
+total is at least 17. If the dealer busts, then the player wins.
+
+6.Comparing cards: when both the player and the dealer stay, it's time to
+compare the total value of the cards and see who has the highest value.
+
+7. Whoever has the highest score closest to 21 will win. The first to win 5 rounds 
+is the grand winner.
+
+Ready? Press 'Enter'
+HEREDOC
+
 
 CARD_VALUES = { "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, "7" => 7,
                 "8" => 8, "9" => 9, "10" => 10, "J" => 10,
@@ -89,7 +101,7 @@ def display_winner(winner)
   when 'dealer'
     prompt "The dealer won!"
   else
-    prompt "It's a tie"
+    prompt "It's a tie!"
   end
 end
 
@@ -109,12 +121,20 @@ def find_grand_winner(player_grand_total, dealer_grand_total)
   nil
 end
 
+# Start Game with welcome message
+prompt game_rules
+
+loop do
+  answer = gets
+  break if answer == "\n"
+  prompt "Invalid input. Press the 'Enter' key if your're ready."
+end
+
 player_grand_total = 0
 dealer_grand_total = 0
 
 # Main Game Loop
 loop do
-  # TO DO method to initialize deck from loop
   system 'clear'
   deck = initialize_deck
 
@@ -126,10 +146,12 @@ loop do
     dealer_cards << deck.pop
   end
 
+  # Calculate the value of cards in each player's hand
   player_total = calc_total(player_cards)
   dealer_total = calc_total(dealer_cards)
 
-  prompt "Welcome to #{MAX_TOTAL} the game!"
+  # Start round
+  prompt "Ok! Let's begin!"
   prompt "Player's Score is #{player_grand_total}."
   prompt "Dealer's score is #{dealer_grand_total}"
   prompt "Dealer has: #{dealer_cards[0]} and unknown card"
@@ -189,19 +211,22 @@ loop do
     prompt "Dealer chose to stay!"
   end
 
+  # Find the winner
   winner = calc_winner(player_total, dealer_total)
 
   player_grand_total += 1 if winner == 'player'
   dealer_grand_total += 1 if winner == 'dealer'
+
   declare_end_round(player_cards, dealer_cards, player_total, dealer_total)
   display_winner(winner)
 
   break if find_grand_winner(player_grand_total, dealer_grand_total)
 
-  answer = play_again?
-  break if answer == 'n'
+  break if play_again? == 'n'
 end
 
+# Only display grand winner if someone scored 5 grand total points
 grand_winner = find_grand_winner(player_grand_total, dealer_grand_total)
 prompt "The Grand Winner is: #{grand_winner}!!!!" if grand_winner
+
 prompt "Thanks for playing!"
