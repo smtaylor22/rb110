@@ -1,7 +1,7 @@
 game_rules = <<HEREDOC
 Welcome to Twenty-One!
 Game Rules:
-1. You will be playing with a normal 52-card deck consisting of the 4 suits 
+1. You will be playing with a normal 52-card deck consisting of the 4 suits
 (hearts, diamonds, clubs, and spades), and 13 values (2, 3, 4, 5, 6, 7, 8, 9, 10,
 jack, queen, king, ace).
 
@@ -22,18 +22,17 @@ A hit means the player will ask for another card. Remember that if the total exc
 21, then the player "busts" and loses.
 
 5. Dealer(computer) turn: when the player stays, it's the dealer's turn. The dealer must
-follow a strict rule for determining whether to hit or stay: hit until the 
+follow a strict rule for determining whether to hit or stay: hit until the
 total is at least 17. If the dealer busts, then the player wins.
 
 6.Comparing cards: when both the player and the dealer stay, it's time to
 compare the total value of the cards and see who has the highest value.
 
-7. Whoever has the highest score closest to 21 will win. The first to win 5 rounds 
+7. Whoever has the highest score closest to 21 will win. The first to win 5 rounds
 is the grand winner.
 
 Ready? Press 'Enter'
 HEREDOC
-
 
 CARD_VALUES = { "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, "7" => 7,
                 "8" => 8, "9" => 9, "10" => 10, "J" => 10,
