@@ -44,6 +44,7 @@ VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 MAX_TOTAL = 21
 MAX_DEALER_TOTAL = 17
 
+# Creates a full 52 deck of cards shuffled
 def initialize_deck
   SUITS.product(VALUES).shuffle
 end
@@ -52,6 +53,7 @@ def prompt(msg)
   puts "=>#{msg}"
 end
 
+# Ask if player wants to play again
 def play_again?
   answer = ''
   loop do
@@ -64,6 +66,7 @@ def play_again?
   answer
 end
 
+# Calculate the total value of cards in a hand
 def calc_total(cards)
   score = 0
   cards.each do |card|
@@ -83,6 +86,7 @@ def busted?(total)
   total > MAX_TOTAL
 end
 
+# Return string of winner with highest score
 def calc_winner(player_total, dealer_total)
   if player_total > dealer_total
     'player'
@@ -93,6 +97,7 @@ def calc_winner(player_total, dealer_total)
   end
 end
 
+# Output who won
 def display_winner(winner)
   case winner
   when 'player'
@@ -104,6 +109,7 @@ def display_winner(winner)
   end
 end
 
+# Output end of round results for both players
 def declare_end_round(player_cards, dealer_cards, player_total, dealer_total)
   puts "=============="
   prompt "Player has #{player_cards}, for a total of: #{player_total}"
@@ -111,6 +117,7 @@ def declare_end_round(player_cards, dealer_cards, player_total, dealer_total)
   puts "=============="
 end
 
+# Declare a grand winner
 def find_grand_winner(player_grand_total, dealer_grand_total)
   if player_grand_total >= 5
     return 'player'
@@ -122,7 +129,6 @@ end
 
 # Start Game with welcome message
 prompt game_rules
-
 loop do
   answer = gets
   break if answer == "\n"
