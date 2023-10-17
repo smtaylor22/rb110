@@ -1,3 +1,4 @@
+require 'pry-byebug'
 =begin
 Problem
   Input: signed number (+,-)
@@ -31,6 +32,7 @@ DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
 def integer_to_string(number)
   result = ''
+  number *= -1 if number < 0
   loop do
     number, remainder = number.divmod(10)
     result.prepend(DIGITS[remainder])
@@ -41,10 +43,9 @@ end
 
 def signed_integer_to_string(number)
   str_rep = integer_to_string(number)
-  case number
-  when number > 0
-    '+' + str_rep
-  when number < 0
+  if number > 0
+    str_rep.prepend('+')
+  elsif number < 0
     '-' + str_rep
   else
     str_rep
