@@ -1,3 +1,5 @@
+require "pry"
+require "pry-byebug"
 =begin
 
 Problem:
@@ -28,13 +30,11 @@ Algorithm
 =end
 
 def ascii_value(string)
-  values = string.chars.map{ |char| char.ord }.sum
+  binding.pry
+  string.chars.map{ |char| char.ord }
 end
 
-# p ascii_value('Four score') == 984
+p ascii_value('Four score') == 984
 # p ascii_value('Launch School') == 1251
 # p ascii_value('a') == 97
 # p ascii_value('') == 0
-
-char = 'h'
-p char.ord
