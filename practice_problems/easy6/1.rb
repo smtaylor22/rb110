@@ -33,27 +33,41 @@ output integers as strings using `sprintf()`
 
 DEGREE = "\xC2\xB0"
 
-def dms(float)
-  degrees_mins = float.divmod(1)
-  degrees = degrees_mins[0].to_i
+# def dms(float)
+#   degrees_mins = float.divmod(1)
+#   degrees = degrees_mins[0].to_i
 
-  mins_secs = degrees_mins[1] * 60
-  mins_secs = mins_secs.divmod(1)
-  minutes = mins_secs[0].to_i
+#   mins_secs = degrees_mins[1] * 60
+#   mins_secs = mins_secs.divmod(1)
+#   minutes = mins_secs[0].to_i
 
-  seconds = mins_secs[1] * 60
-  seconds = seconds.round.to_i
-  if seconds == 60
-    minutes += 1
-    seconds = 0
-  end
+#   seconds = mins_secs[1] * 60
+#   seconds = seconds.round.to_i
+#   if seconds == 60
+#     minutes += 1
+#     seconds = 0
+#   end
 
-  degrees_output = degrees.to_s
-  minutes_string = sprintf('%.2d', minutes)
-  seconds_string = sprintf('%.2d', seconds)
+#   degrees_output = degrees.to_s
+#   minutes_string = sprintf('%.2d', minutes)
+#   seconds_string = sprintf('%.2d', seconds)
   
-  p %(#{degrees_output}#{DEGREE}#{minutes_string}'#{seconds_string}")
+#   p %(#{degrees_output}#{DEGREE}#{minutes_string}'#{seconds_string}")
   
+# end
+
+
+DEGREE = "\xC2\xB0"
+MINUTES_PER_DEGREE = 60
+SECONDS_PER_MINUTE = 60
+SECONDS_PER_DEGREE = MINUTES_PER_DEGREE * SECONDS_PER_MINUTE
+
+def dms(degrees_float)
+  degrees_float = degrees_float % 360
+  total_seconds = (degrees_float * SECONDS_PER_DEGREE).round
+  degrees, remaining_seconds = total_seconds.divmod(SECONDS_PER_DEGREE)
+  minutes, seconds = remaining_seconds.divmod(SECONDS_PER_MINUTE)
+  format(%(#{degrees}#{DEGREE}%02d'%02d"), minutes, seconds)
 end
   
 
@@ -63,3 +77,7 @@ p dms(254.6) == %(254°36'00")
 p dms(93.034773) == %(93°02'05")
 p dms(0) == %(0°00'00")
 p dms(360) == %(360°00'00") || dms(360) == %(0°00'00")
+
+p dms(400) == %(40°00'00")
+p dms(-40) == %(320°00'00")
+p dms(-420) == %(300°00'00")
