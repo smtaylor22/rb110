@@ -50,7 +50,6 @@ turn 3 inputs into array
 
 def triangle(side1, side2, side3)
   sides = [side1.to_f, side2.to_f, side3.to_f].sort
-  p sides
   case
   when invalid?(sides) then :invalid
   when equilateral?(sides) then :equilateral
@@ -61,7 +60,7 @@ def triangle(side1, side2, side3)
 end
 
 def invalid?(sides)
-  sides[0] + sides[1] > sides[2] && sides.all? {|side| side > 0}
+  (sides[0] + sides[1]) < sides[2] || sides.include?(0)
 end
 
 def equilateral?(sides)
@@ -69,7 +68,7 @@ def equilateral?(sides)
 end
 
 def isosceles?(sides)
-  sides[0] == sides[1]
+  sides.any? {|side| sides.count(side) >= 2 }
 end
 
 p triangle(3, 3, 3) 
