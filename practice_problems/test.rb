@@ -83,14 +83,14 @@ the same elemetns as the array `arr`.
 
 
 This illustrates the concept of selection on collections in ruby.
-In this case the `Array#select` is a selection method. This method returns
-a new array that only contains elements from each iteration where the block 
+In this case the `Array#select` is a selection method. Selection methods return
+a new collection that only contains elements from each iteration where the block 
 return value evalutates to true. The return value of a block is always the 
 return value of the last expression in the block. With selection in ruby,
-each iteration considers the return value of the block and takes that into 
+each iteration of the method considers the return value of the block and takes that into 
 account for which elemetns get selected.
  The final return value of the select 
-method is the newly created array with selected elemetns or an empty array if none
+method is the newly created collection with selected elemetns or an empty collection if none
 were selected. 
 
 
