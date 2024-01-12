@@ -1,3 +1,36 @@
+=begin
+
+Problem:
+  Input: string
+  Output: string of character occuring least often
+
+  Rules:
+    Implicit:
+    Explicit: equal lowest character occurance return first of corruances
+    aaabbb = a
+
+
+Examples/Test Cases
+
+Data structure:
+hash increment count of that character in strin
+return the first of the lowest value 
+
+Algorithm:
+loop over array input string
+  add the current character to the hash if not already there setting value to 1
+  otherwise increment for for the current letter key in hash by 1
+variable lowest_value initialized to first element of hash
+variable lowest_string_char
+loop over hash finding the lowest value 
+  if current hash element value is less than current lowest_value
+    update lowest_value and lowest string char vbariables
+
+return the lowest_string_char
+
+
+=end
+
 # Write a method that takes a string as an argument and returns
 # the character that occurs least often in the given string.
 # If there are multiple characters with the equal lowest number
@@ -7,10 +40,28 @@
 
 # Examples:
 
-p least_common_char("Hello World") #== "h"
-p least_common_char("Peter Piper picked a peck of pickled peppers") #== "t"
-p least_common_char("Mississippi") #== "m"
-p least_common_char("Happy birthday!") #== ' '
-p least_common_char("aaaaaAAAA") #== 'a'
+
+def least_common_char(str)
+  letter_occurances = str.chars.each_with_object(Hash.new(0)) do |char, hash|
+    hash[char.downcase] += 1
+  end
+  lowest_char = letter_occurances.first[0]
+  lowest_val = letter_occurances.first[1]
+
+  letter_occurances.each do |key, val|
+    if val < lowest_val
+      lowest_val = val
+      lowest_char = key
+    end
+  end
+  p lowest_char
+end
+
+p least_common_char("Hello World") == "h"
+p least_common_char("Peter Piper picked a peck of pickled peppers") == "t"
+p least_common_char("Mississippi") == "m"
+p least_common_char("Happy birthday!") == ' '
+p least_common_char("aaaaaAAAA") == 'a'
 
 # The tests above should print "true".
+
