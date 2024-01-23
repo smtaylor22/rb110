@@ -1,5 +1,4 @@
-require "pry"
-require "pry-byebug"
+
 =begin
 Problem:
   Input: integer
@@ -33,7 +32,7 @@ def featured(num)
   loop do
   # binding.pry
     return "There is no possible number that fulfills those requirements" if num.digits.size > 10
-    return p num if num > start && num.odd? && num % 7 == 0 && num.digits.uniq == num.digits
+    return num if num > start && num.odd? && num % 7 == 0 && num.digits.uniq == num.digits
     num += 1
   end
 end
@@ -48,3 +47,37 @@ p featured(999_999) == 1_023_547
 p featured(999_999_987) == 1_023_456_987
  
 p featured(9_999_999_999) # -> There is no possible number that fulfills those requirements
+
+
+#Nick's version
+
+# Algorithim
+=begin
+Take the int_source, divide by 7 add 1, and multiply the int_source by that NUMBER
+(this creates the first possible featured number)
+Increment possible featured number by 7 until possible featured number is greater than 9_999_999_999
+  - return possible featured number early if it meets all 3 featured number checks
+  - return below message if we get to end of loop with out returning true early
+    - "There is no possible number that fulfills those requirements"
+
+Is feature number helper method
+  - multiple of 7
+  - odd number
+  - whose digits occur exactly once each
+=end
+
+def featured int_source
+  possible_feature = (int_source /7 + 1) * 7
+  possible_feature += 7 if possible_feature.even?
+
+  while possible_feature < 9_999_999_999 do
+    return possible_feature if featured_number?(possible_feature)
+    possible_feature += 14
+  end
+  "There is no possible number that fulfills those requirements"
+  end
+
+def featured_number? possible_feature
+  digits_array = possible_feature.digits
+  digits_array.length == digits_array.uniq.length
+end

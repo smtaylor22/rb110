@@ -32,8 +32,8 @@ def balanced?(string)
   right_count = 0
 
   string.gsub(/[^()]/,'').each_char do |chr|
-    left_count += 1 if chr == '('
-    right_count += 1 if chr == ')'
+    left_count += 1 if chr == '(' # check for left
+    right_count += 1 if chr == ')' # check for right
     return false if right_count > left_count
   end
   left_count == right_count
