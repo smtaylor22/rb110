@@ -31,6 +31,24 @@ The count seems to be 1 unless there is a pair that occurs morer than once
 
 
 Algorithm:
+variable to store count
+Get the uniq elements in the input array
+Get the count of each element 
+Divide this count by 2 
+add this amount to pairs count
+  This will be the number of pairs of elements
+  0 if only 1 counted
+  1 if 2 count
+  1 if 3 counted etc....
 
 
 =end
+
+def pairs(arr)
+  arr.uniq.sum do |num|
+   arr.count(num) / 2
+  end
+end
+
+p pairs([1, 2, 5, 6, 5, 2])
+p pairs([1, 2, 2, 20, 6, 20, 2, 6, 2])
