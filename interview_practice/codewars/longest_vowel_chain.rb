@@ -51,18 +51,20 @@ return max of array_of_vowel_substrings
 
 
 def solve(s)
-  vowel_substrings = []
-  substring = ''
-  s.each_char do |char|
-    if %w(a e i o u).include?(char)
-      substring.concat(char)
-    else
-      vowel_substrings << substring if !substring.empty?
-      substring = ''
-    end
-  end
-  vowel_substrings << substring if !substring.empty?
-  vowel_substrings.max_by {|sub| sub.size}.size
+  # vowel_substrings = []
+  # substring = ''
+  # s.each_char do |char|
+  #   if %w(a e i o u).include?(char)
+  #     substring.concat(char)
+  #   else
+  #     vowel_substrings << substring if !substring.empty?
+  #     substring = ''
+  #   end
+  # end
+  # vowel_substrings << substring if !substring.empty?
+  # vowel_substrings.max_by {|sub| sub.size}.size
+
+  p s.scan(/[aeiou]+/)
 end
 
 solve("suoidea") == 3
